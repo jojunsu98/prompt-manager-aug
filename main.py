@@ -27,6 +27,7 @@ prompts = [
         "favorite": False
     }
 ]
+
 def add_prompt():
     print("\n=== 프롬프트 추가 ===")
 
@@ -45,13 +46,21 @@ def add_prompt():
         print(f"{i}) {category}")
 
     while True:
-        choice = input("선택: ").strip()
+        choice = input("번호 선택 또는 카테고리 직접 입력: ").strip()
 
         if choice.isdigit() and 1 <= int(choice) <= len(categories):
             category = categories[int(choice) - 1]
             break
 
-        print("올바른 번호를 입력해주세요.")
+        if choice:
+            category = choice
+
+            if category not in categories:
+                categories.append(category)
+
+            break
+
+        print("카테고리를 입력해주세요.")
 
     new_prompt = {
         "title": title,
@@ -241,4 +250,4 @@ while True:
         print("프로그램을 종료합니다.")
         break
     else:
-        print("아직 구현되지 않은 기능입니다.")
+        print("올바른 메뉴 번호를 입력해주세요.")
