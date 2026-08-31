@@ -269,16 +269,17 @@ https://github.com/jojunsu98/prompt-manager-aug
 main
 ```
 
-최종 상태 확인:
+최종 반영 상태는 다음 명령으로 확인합니다.
 
-```text
-On branch main
-Your branch is up to date with 'origin/main'.
-
-nothing to commit, working tree clean
+```bash
+git branch --show-current
+git rev-parse main
+git rev-parse origin/main
+git status
 ```
 
-이를 통해 로컬 저장소의 최종 변경사항이 GitHub의 `origin/main`에 반영되었음을 확인하였습니다.
+최종 배포가 완료된 상태에서는 현재 브랜치가 `main`이고, 로컬 `main`과
+`origin/main`의 SHA가 같으며, working tree가 clean이어야 합니다.
 
 ---
 
