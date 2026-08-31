@@ -17,7 +17,7 @@ prompts = [
             "분야는 생략하고 5분 안에 읽을 분량으로 작성해 줘."
         ),
         "category": "자동화",
-        "favorite": False,
+        "favorite": True,
     },
     {
         "title": "AI 기술 뉴스 3줄 요약",
@@ -46,7 +46,7 @@ prompts = [
             "배경은 단순하게 유지하고 제품명과 핵심 혜택을 읽기 쉽게 배치해 줘."
         ),
         "category": "이미지 생성",
-        "favorite": True,
+        "favorite": False,
     },
     {
         "title": "15초 제품 광고 영상 구성",
@@ -98,7 +98,7 @@ def add_prompt():
     while True:
         choice = input("번호 선택 또는 새 카테고리 직접 입력: ").strip()
 
-        if choice.isdigit():
+        if choice.isdecimal():
             category_number = int(choice)
             if 1 <= category_number <= len(categories):
                 category = categories[category_number - 1]
@@ -107,7 +107,7 @@ def add_prompt():
             print("올바른 카테고리 번호를 입력해 주세요.")
             continue
 
-        if choice.lstrip("+-").isdigit():
+        if choice.lstrip("+-").isdecimal():
             print("올바른 카테고리 번호를 입력해 주세요.")
             continue
 
@@ -138,8 +138,10 @@ def show_list():
         return []
 
     for index, prompt in enumerate(prompts, start=1):
-        star = " ⭐" if prompt["favorite"] else ""
-        print(f"{index}. [{prompt['category']}] {prompt['title']}{star}")
+        favorite_mark = "[즐겨찾기]" if prompt["favorite"] else "[일반]"
+        print(
+            f"{index}. [{prompt['category']}] {prompt['title']} {favorite_mark}"
+        )
 
     print(f"\n총 {len(prompts)}개의 프롬프트")
     return prompts
@@ -154,7 +156,7 @@ def show_by_category(selected_category=None):
 
         while True:
             choice = input("선택: ").strip()
-            if choice.isdigit() and 1 <= int(choice) <= len(categories):
+            if choice.isdecimal() and 1 <= int(choice) <= len(categories):
                 selected_category = categories[int(choice) - 1]
                 break
             print("올바른 번호를 입력해 주세요.")
@@ -169,8 +171,8 @@ def show_by_category(selected_category=None):
 
     print(f"\n[{selected_category}] 카테고리 프롬프트:")
     for index, prompt in enumerate(results, start=1):
-        star = " ⭐" if prompt["favorite"] else ""
-        print(f"{index}. {prompt['title']}{star}")
+        favorite_mark = "[즐겨찾기]" if prompt["favorite"] else "[일반]"
+        print(f"{index}. {prompt['title']} {favorite_mark}")
 
     print(f"\n총 {len(results)}개의 프롬프트")
     return results
@@ -201,8 +203,10 @@ def search_prompt(keyword=None):
 
     print("\n검색 결과:")
     for index, prompt in enumerate(results, start=1):
-        star = " ⭐" if prompt["favorite"] else ""
-        print(f"{index}. [{prompt['category']}] {prompt['title']}{star}")
+        favorite_mark = "[즐겨찾기]" if prompt["favorite"] else "[일반]"
+        print(
+            f"{index}. [{prompt['category']}] {prompt['title']} {favorite_mark}"
+        )
 
     print(f"\n{len(results)}개의 프롬프트를 찾았습니다.")
     return results
@@ -219,26 +223,26 @@ def show_detail(prompt_number=None):
         show_list()
         while True:
             choice = input("\n프롬프트 번호 입력: ").strip()
-            if choice.isdigit() and 1 <= int(choice) <= len(prompts):
+            if choice.isdecimal() and 1 <= int(choice) <= len(prompts):
                 prompt = prompts[int(choice) - 1]
                 break
             print("올바른 번호를 입력해 주세요.")
     else:
         choice = str(prompt_number).strip()
-        if not choice.isdigit() or not 1 <= int(choice) <= len(prompts):
+        if not choice.isdecimal() or not 1 <= int(choice) <= len(prompts):
             print("올바른 번호를 입력해 주세요.")
             return None
         prompt = prompts[int(choice) - 1]
 
-    favorite = "⭐" if prompt["favorite"] else "X"
-    print("\n" + "─" * 30)
+    favorite = "O" if prompt["favorite"] else "X"
+    print("\n" + "-" * 30)
     print(f"제목: {prompt['title']}")
     print(f"카테고리: {prompt['category']}")
     print(f"즐겨찾기: {favorite}")
-    print("─" * 30)
+    print("-" * 30)
     print("내용:")
     print(prompt["content"])
-    print("─" * 30)
+    print("-" * 30)
     return prompt
 
 
@@ -253,13 +257,13 @@ def toggle_favorite(prompt_number=None):
         show_list()
         while True:
             choice = input("\n프롬프트 번호 입력: ").strip()
-            if choice.isdigit() and 1 <= int(choice) <= len(prompts):
+            if choice.isdecimal() and 1 <= int(choice) <= len(prompts):
                 prompt = prompts[int(choice) - 1]
                 break
             print("올바른 번호를 입력해 주세요.")
     else:
         choice = str(prompt_number).strip()
-        if not choice.isdigit() or not 1 <= int(choice) <= len(prompts):
+        if not choice.isdecimal() or not 1 <= int(choice) <= len(prompts):
             print("올바른 번호를 입력해 주세요.")
             return None
         prompt = prompts[int(choice) - 1]
@@ -281,7 +285,7 @@ def show_favorites():
         return []
 
     for index, prompt in enumerate(favorites, start=1):
-        print(f"{index}. [{prompt['category']}] {prompt['title']} ⭐")
+        print(f"{index}. [{prompt['category']}] {prompt['title']} [즐겨찾기]")
 
     print(f"\n총 {len(favorites)}개의 즐겨찾기")
     return favorites
@@ -293,6 +297,11 @@ def run_evaluation_demo():
     try:
         demo_category = prompts[0]["category"] if prompts else categories[0]
         demo_keyword = prompts[0]["title"].split()[0] if prompts else ""
+        demo_favorite_number = 1
+        for index, prompt in enumerate(prompts, start=1):
+            if not prompt["favorite"]:
+                demo_favorite_number = index
+                break
 
         print("\n[데모 1/6] 전체 프롬프트 목록")
         show_list()
@@ -300,14 +309,14 @@ def run_evaluation_demo():
         print("\n[데모 2/6] 카테고리별 조회")
         show_by_category(demo_category)
 
-        print("\n[데모 3/6] 검색")
+        print("\n[데모 3/6] 프롬프트 검색")
         search_prompt(demo_keyword)
 
-        print("\n[데모 4/6] 상세 보기")
+        print("\n[데모 4/6] 프롬프트 상세 보기")
         show_detail(1)
 
         print("\n[데모 5/6] 즐겨찾기 변경")
-        toggle_favorite(1)
+        toggle_favorite(demo_favorite_number)
 
         print("\n[데모 6/6] 즐겨찾기 목록")
         show_favorites()
@@ -319,7 +328,7 @@ def run_evaluation_demo():
 
 
 def show_menu():
-    print("\n=== 나만의 프롬프트 관리 ===")
+    print("\n=== 코디세이 AI 학습 프롬프트 관리함 ===")
     print("1. 프롬프트 추가")
     print("2. 프롬프트 목록")
     print("3. 카테고리별 조회")
